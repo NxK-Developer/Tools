@@ -9,9 +9,22 @@ Paste your draft, essay, documentation, or social post here to inspect word coun
 export function WordCounterTool() {
   const textareaId = useId();
   const [text, setText] = useState<string>(SAMPLE_TEXT);
+  const [copyTextStatus, setCopyTextStatus] = useState<'idle' | 'copied' | 'error'>('idle');
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle');
 
   const metrics = analyzeText(text);
+
+  const handleCopyText = async () => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyTextStatus('copied');
+      setTimeout(() => setCopyTextStatus('idle'), 2000);
+    } catch {
+      setCopyTextStatus('error');
+      setTimeout(() => setCopyTextStatus('idle'), 3000);
+    }
+  };
 
   const handleCopySummary = async () => {
     const summary = [
@@ -43,22 +56,45 @@ export function WordCounterTool() {
             htmlFor={textareaId}
             className="text-sm font-semibold text-[var(--text-primary)]"
           >
-            Input Text
+            Writing Area
           </label>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setText(SAMPLE_TEXT)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors cursor-pointer whitespace-nowrap"
+              className="glass-btn-secondary inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium cursor-pointer whitespace-nowrap"
             >
               <FileText className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Load Sample</span>
             </button>
             <button
               type="button"
+              data-testid="copy-text-btn"
+              onClick={handleCopyText}
+              disabled={text.length === 0}
+              className="glass-btn-secondary inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:pointer-events-none cursor-pointer whitespace-nowrap"
+            >
+              {copyTextStatus === 'copied' ? (
+                <>
+                  <Check
+                    className="w-3.5 h-3.5 text-[var(--status-available-text)]"
+                    aria-hidden="true"
+                  />
+                  <span>Copied Text</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Copy Text</span>
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              data-testid="clear-text-btn"
               onClick={() => setText('')}
               disabled={text.length === 0}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer whitespace-nowrap"
+              className="glass-btn-secondary inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-40 disabled:pointer-events-none cursor-pointer whitespace-nowrap"
             >
               <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Clear Text</span>
@@ -72,21 +108,21 @@ export function WordCounterTool() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type or paste your text here to count words, characters, sentences, and paragraphs..."
-          className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-input)] p-4 text-sm sm:text-base leading-relaxed text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] transition-colors resize-y"
+          className="w-full rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-input)] p-4 text-sm sm:text-base leading-relaxed text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] transition-colors resize-y"
         />
       </div>
 
       {/* Metrics & Breakdown Column */}
       <div className="lg:col-span-4 space-y-6">
-        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6">
+        <div className="glass-panel rounded-2xl p-6">
           <div className="flex items-center justify-between gap-2 pb-4 border-b border-[var(--border-subtle)]">
             <h2 className="text-sm font-semibold text-[var(--text-primary)]">
-              Document Metrics
+              Live Statistics
             </h2>
             <button
               type="button"
               onClick={handleCopySummary}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-canvas)] px-2.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors cursor-pointer whitespace-nowrap"
+              className="glass-btn-secondary inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium cursor-pointer whitespace-nowrap"
             >
               {copyStatus === 'copied' ? (
                 <>
@@ -105,7 +141,7 @@ export function WordCounterTool() {
             </button>
           </div>
 
-          {copyStatus === 'error' && (
+          {(copyStatus === 'error' || copyTextStatus === 'error') && (
             <p className="mt-2 text-xs text-[var(--status-danger-text)]">
               Clipboard access was blocked by the browser.
             </p>
@@ -131,20 +167,29 @@ export function WordCounterTool() {
               </dd>
             </div>
             <div className="border-t border-[var(--border-subtle)] pt-3">
-              <dt className="text-xs text-[var(--text-muted)]">No Spaces</dt>
-              <dd className="mt-1 text-lg font-semibold text-[var(--text-primary)] font-mono">
+              <dt className="text-xs text-[var(--text-muted)]">Characters (No Spaces)</dt>
+              <dd
+                data-testid="metric-characters-no-spaces"
+                className="mt-1 text-lg font-semibold text-[var(--text-primary)] font-mono"
+              >
                 {metrics.charactersNoSpaces}
               </dd>
             </div>
             <div className="border-t border-[var(--border-subtle)] pt-3">
               <dt className="text-xs text-[var(--text-muted)]">Sentences</dt>
-              <dd className="mt-1 text-lg font-semibold text-[var(--text-primary)] font-mono">
+              <dd
+                data-testid="metric-sentences"
+                className="mt-1 text-lg font-semibold text-[var(--text-primary)] font-mono"
+              >
                 {metrics.sentences}
               </dd>
             </div>
             <div className="border-t border-[var(--border-subtle)] pt-3">
               <dt className="text-xs text-[var(--text-muted)]">Paragraphs</dt>
-              <dd className="mt-1 text-lg font-semibold text-[var(--text-primary)] font-mono">
+              <dd
+                data-testid="metric-paragraphs"
+                className="mt-1 text-lg font-semibold text-[var(--text-primary)] font-mono"
+              >
                 {metrics.paragraphs}
               </dd>
             </div>
@@ -160,7 +205,7 @@ export function WordCounterTool() {
         </div>
 
         {/* Top Words Table */}
-        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6">
+        <div className="glass-panel rounded-2xl p-6">
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">
             Frequent Terms
           </h3>

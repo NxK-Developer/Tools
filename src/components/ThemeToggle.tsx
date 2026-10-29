@@ -17,18 +17,14 @@ export function ThemeToggle({ showLabel = false }: ThemeToggleProps) {
       onClick={toggleTheme}
       aria-label={actionLabel}
       title={actionLabel}
-      className="inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-2 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] transition-colors cursor-pointer whitespace-nowrap shrink-0 min-h-[40px] min-w-[40px]"
+      className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-2 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer whitespace-nowrap shrink-0 min-h-[36px] min-w-[36px]"
     >
       {isDark ? (
         <Sun className="w-4 h-4 text-amber-400 shrink-0" aria-hidden="true" />
       ) : (
-        <Moon className="w-4 h-4 text-[var(--text-secondary)] shrink-0" aria-hidden="true" />
+        <Moon className="w-4 h-4 text-[var(--text-primary)] shrink-0" aria-hidden="true" />
       )}
-      {showLabel ? (
-        <span>{isDark ? 'Light Theme' : 'Dark Theme'}</span>
-      ) : (
-        <span className="hidden sm:inline">{isDark ? 'Light' : 'Dark'}</span>
-      )}
+      {showLabel && <span className="px-1">{isDark ? 'Light' : 'Dark'}</span>}
     </button>
   );
 }

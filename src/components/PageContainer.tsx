@@ -25,9 +25,9 @@ export function PageContainer({
   children,
 }: PageContainerProps) {
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10 animate-enter">
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav aria-label="Breadcrumb" className="mb-6">
+        <nav aria-label="Breadcrumb" className="mb-4 sm:mb-5">
           <ol className="flex flex-wrap items-center gap-1.5 text-xs text-[var(--text-muted)]">
             {breadcrumbs.map((crumb, idx) => {
               const isLast = idx === breadcrumbs.length - 1;
@@ -59,10 +59,10 @@ export function PageContainer({
       )}
 
       {(title || subtitle || kicker) && (
-        <header className="mb-8 sm:mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-[var(--border-subtle)] pb-6">
+        <header className="mb-7 sm:mb-9 flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-[var(--border-subtle)] pb-6">
           <div className="max-w-3xl">
             {kicker && (
-              <p className="text-xs font-medium text-[var(--accent-primary)] mb-2">
+              <p className="text-xs font-semibold text-[var(--accent-primary)] mb-1.5">
                 {kicker}
               </p>
             )}
@@ -72,7 +72,7 @@ export function PageContainer({
               </h1>
             )}
             {subtitle && (
-              <p className="mt-2.5 text-sm sm:text-base leading-relaxed text-[var(--text-secondary)]">
+              <p className="mt-2 text-sm sm:text-base leading-relaxed text-[var(--text-secondary)]">
                 {subtitle}
               </p>
             )}

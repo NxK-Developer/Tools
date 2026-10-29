@@ -6,13 +6,17 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
+import { AtmosphericBackground } from './components/AtmosphericBackground';
 import { SiteHeader } from './components/SiteHeader';
 import { SiteFooter } from './components/SiteFooter';
 import { HomePage } from './pages/HomePage';
 import { ToolsDirectoryPage } from './pages/ToolsDirectoryPage';
+import { SearchResultsPage } from './pages/SearchResultsPage';
+import { CategoriesOverviewPage } from './pages/CategoriesOverviewPage';
 import { CategoryPage } from './pages/CategoryPage';
 import { ToolPage } from './pages/ToolPage';
 import { AboutPage } from './pages/AboutPage';
+import { DeveloperPage } from './pages/DeveloperPage';
 import { ContactPage } from './pages/ContactPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
@@ -33,7 +37,8 @@ export default function App() {
     <ThemeProvider>
       <BrowserRouter>
         <ScrollToTopOnNavigate />
-        <div className="flex min-h-screen flex-col bg-[var(--bg-canvas)] text-[var(--text-primary)]">
+        <div className="relative flex min-h-screen flex-col text-[var(--text-primary)]">
+          <AtmosphericBackground />
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-[var(--accent-primary)] focus:px-4 focus:py-2 focus:text-xs focus:font-semibold focus:text-[var(--accent-contrast)]"
@@ -45,9 +50,12 @@ export default function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/tools" element={<ToolsDirectoryPage />} />
+              <Route path="/search" element={<SearchResultsPage />} />
+              <Route path="/categories" element={<CategoriesOverviewPage />} />
               <Route path="/tools/:toolId" element={<ToolPage />} />
               <Route path="/category/:categoryId" element={<CategoryPage />} />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/developer" element={<DeveloperPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               <Route path="/terms" element={<TermsPage />} />

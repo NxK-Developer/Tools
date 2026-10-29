@@ -23,7 +23,7 @@ export function analyzeText(input: string): WordCountMetrics {
   if (!input || input.trim().length === 0) {
     return {
       words: 0,
-      characters: input ? input.length : 0,
+      characters: input ? Array.from(input).length : 0,
       charactersNoSpaces: 0,
       sentences: 0,
       paragraphs: 0,
@@ -33,16 +33,23 @@ export function analyzeText(input: string): WordCountMetrics {
     };
   }
 
-  const characters = input.length;
-  const charactersNoSpaces = input.replace(/\s/g, '').length;
-  const wordTokens = input
-    .trim()
-    .split(/\s+/)
-    .filter((token) => token.length > 0);
+  // Use Array.from so astral Unicode characters (emojis, CJK extensions) count accurately as 1 character
+  const characters = Array.from(input).length;
+  const charactersNoSpaces = Array.from(input.replace(/\s/g, '')).length;
+
+  // Match Unicode letters/numbers words across Latin, Devanagari, Cyrillic, Arabic, etc., falling back to whitespace tokens
+  const unicodeWordMatches = input.match(/[\p{L}\p{M}\p{N}]+(?:['’-][\p{L}\p{M}\p{N}]+)*/gu);
+  const wordTokens =
+    unicodeWordMatches && unicodeWordMatches.length > 0
+      ? unicodeWordMatches
+      : input
+          .trim()
+          .split(/\s+/)
+          .filter((token) => token.length > 0);
   const words = wordTokens.length;
 
   const sentenceMatches = input
-    .split(/[.!?]+/)
+    .split(/[.!?।！？]+/u)
     .map((s) => s.trim())
     .filter((s) => s.length > 0);
   const sentences = sentenceMatches.length;
@@ -54,12 +61,12 @@ export function analyzeText(input: string): WordCountMetrics {
   const paragraphs = paragraphMatches.length;
 
   const lines = input.split(/\r\n|\r|\n/).length;
-  const readingTimeMinutes = Math.max(1, Math.ceil(words / 200));
+  const readingTimeMinutes = words === 0 ? 0 : Math.max(1, Math.ceil(words / 200));
 
   const frequencies = new Map<string, number>();
   for (const raw of wordTokens) {
-    const cleaned = raw.toLowerCase().replace(/^[^a-z0-9]+|[^a-z0-9]+$/gi, '');
-    if (cleaned.length >= 3 && !STOP_WORDS.has(cleaned)) {
+    const cleaned = raw.toLowerCase().replace(/^[^\p{L}\p{M}\p{N}]+|[^\p{L}\p{M}\p{N}]+$/gu, '');
+    if (Array.from(cleaned).length >= 3 && !STOP_WORDS.has(cleaned)) {
       frequencies.set(cleaned, (frequencies.get(cleaned) ?? 0) + 1);
     }
   }

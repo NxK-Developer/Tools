@@ -1,4 +1,5 @@
 import React, { useState, useId } from 'react';
+import { Calculator, RotateCcw, AlertCircle } from 'lucide-react';
 import {
   calculatePercentOf,
   calculateWhatPercent,
@@ -29,7 +30,7 @@ export function PercentageCalculatorTool() {
       {/* Card 1: X% of Y */}
       <section
         aria-labelledby={`${idPrefix}-h1`}
-        className="flex flex-col justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
+        className="glass-panel flex flex-col justify-between rounded-2xl p-6"
       >
         <div>
           <h2
@@ -42,7 +43,10 @@ export function PercentageCalculatorTool() {
             Find how much a given percentage of a total number equals.
           </p>
 
-          <div className="mt-5 space-y-4">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="mt-5 space-y-4"
+          >
             <div>
               <label
                 htmlFor={`${idPrefix}-pct1`}
@@ -56,6 +60,7 @@ export function PercentageCalculatorTool() {
                 step="any"
                 value={pct1}
                 onChange={(e) => setPct1(e.target.value)}
+                placeholder="e.g. 15"
                 className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-input)] px-3.5 py-2.5 text-sm font-mono text-[var(--text-primary)] focus:border-[var(--accent-primary)] transition-colors"
               />
             </div>
@@ -73,10 +78,33 @@ export function PercentageCalculatorTool() {
                 step="any"
                 value={total1}
                 onChange={(e) => setTotal1(e.target.value)}
+                placeholder="e.g. 240"
                 className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-input)] px-3.5 py-2.5 text-sm font-mono text-[var(--text-primary)] focus:border-[var(--accent-primary)] transition-colors"
               />
             </div>
-          </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="submit"
+                className="glass-btn-primary flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer"
+              >
+                <Calculator className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Calculate</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPct1('15');
+                  setTotal1('240');
+                }}
+                className="glass-btn-secondary inline-flex items-center justify-center gap-1 rounded-lg px-3 py-2 text-xs font-medium cursor-pointer"
+                aria-label="Reset Percentage of a Value"
+              >
+                <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Reset</span>
+              </button>
+            </div>
+          </form>
         </div>
 
         <div className="mt-6 border-t border-[var(--border-subtle)] pt-4 tabular-nums">
@@ -87,16 +115,26 @@ export function PercentageCalculatorTool() {
           >
             {res1.formatted}
           </div>
-          <p className="mt-1.5 text-xs font-mono text-[var(--text-muted)]">
-            {res1.formulaDescription}
-          </p>
+          {!res1.isValid ? (
+            <p
+              role="alert"
+              className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--status-danger-text)]"
+            >
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+              <span>{res1.formulaDescription}</span>
+            </p>
+          ) : (
+            <p className="mt-1.5 text-xs font-mono text-[var(--text-muted)]">
+              {res1.formulaDescription}
+            </p>
+          )}
         </div>
       </section>
 
       {/* Card 2: X is what % of Y */}
       <section
         aria-labelledby={`${idPrefix}-h2`}
-        className="flex flex-col justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
+        className="glass-panel flex flex-col justify-between rounded-2xl p-6"
       >
         <div>
           <h2
@@ -109,7 +147,10 @@ export function PercentageCalculatorTool() {
             Determine what percentage the first value represents of the second value.
           </p>
 
-          <div className="mt-5 space-y-4">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="mt-5 space-y-4"
+          >
             <div>
               <label
                 htmlFor={`${idPrefix}-part2`}
@@ -123,6 +164,7 @@ export function PercentageCalculatorTool() {
                 step="any"
                 value={part2}
                 onChange={(e) => setPart2(e.target.value)}
+                placeholder="e.g. 45"
                 className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-input)] px-3.5 py-2.5 text-sm font-mono text-[var(--text-primary)] focus:border-[var(--accent-primary)] transition-colors"
               />
             </div>
@@ -140,10 +182,33 @@ export function PercentageCalculatorTool() {
                 step="any"
                 value={whole2}
                 onChange={(e) => setWhole2(e.target.value)}
+                placeholder="e.g. 180"
                 className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-input)] px-3.5 py-2.5 text-sm font-mono text-[var(--text-primary)] focus:border-[var(--accent-primary)] transition-colors"
               />
             </div>
-          </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="submit"
+                className="glass-btn-primary flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer"
+              >
+                <Calculator className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Calculate</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setPart2('45');
+                  setWhole2('180');
+                }}
+                className="glass-btn-secondary inline-flex items-center justify-center gap-1 rounded-lg px-3 py-2 text-xs font-medium cursor-pointer"
+                aria-label="Reset Ratio to Percentage"
+              >
+                <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Reset</span>
+              </button>
+            </div>
+          </form>
         </div>
 
         <div className="mt-6 border-t border-[var(--border-subtle)] pt-4 tabular-nums">
@@ -154,16 +219,26 @@ export function PercentageCalculatorTool() {
           >
             {res2.formatted}
           </div>
-          <p className="mt-1.5 text-xs font-mono text-[var(--text-muted)]">
-            {res2.formulaDescription}
-          </p>
+          {!res2.isValid ? (
+            <p
+              role="alert"
+              className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--status-danger-text)]"
+            >
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+              <span>{res2.formulaDescription}</span>
+            </p>
+          ) : (
+            <p className="mt-1.5 text-xs font-mono text-[var(--text-muted)]">
+              {res2.formulaDescription}
+            </p>
+          )}
         </div>
       </section>
 
       {/* Card 3: Percentage Increase / Decrease */}
       <section
         aria-labelledby={`${idPrefix}-h3`}
-        className="flex flex-col justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6"
+        className="glass-panel flex flex-col justify-between rounded-2xl p-6"
       >
         <div>
           <h2
@@ -176,7 +251,10 @@ export function PercentageCalculatorTool() {
             Calculate the percentage increase or decrease between two values.
           </p>
 
-          <div className="mt-5 space-y-4">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="mt-5 space-y-4"
+          >
             <div>
               <label
                 htmlFor={`${idPrefix}-from3`}
@@ -190,6 +268,7 @@ export function PercentageCalculatorTool() {
                 step="any"
                 value={from3}
                 onChange={(e) => setFrom3(e.target.value)}
+                placeholder="e.g. 120"
                 className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-input)] px-3.5 py-2.5 text-sm font-mono text-[var(--text-primary)] focus:border-[var(--accent-primary)] transition-colors"
               />
             </div>
@@ -207,10 +286,33 @@ export function PercentageCalculatorTool() {
                 step="any"
                 value={to3}
                 onChange={(e) => setTo3(e.target.value)}
+                placeholder="e.g. 150"
                 className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-input)] px-3.5 py-2.5 text-sm font-mono text-[var(--text-primary)] focus:border-[var(--accent-primary)] transition-colors"
               />
             </div>
-          </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="submit"
+                className="glass-btn-primary flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer"
+              >
+                <Calculator className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Calculate</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setFrom3('120');
+                  setTo3('150');
+                }}
+                className="glass-btn-secondary inline-flex items-center justify-center gap-1 rounded-lg px-3 py-2 text-xs font-medium cursor-pointer"
+                aria-label="Reset Percentage Change"
+              >
+                <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Reset</span>
+              </button>
+            </div>
+          </form>
         </div>
 
         <div className="mt-6 border-t border-[var(--border-subtle)] pt-4 tabular-nums">
@@ -221,9 +323,19 @@ export function PercentageCalculatorTool() {
           >
             {res3.formatted}
           </div>
-          <p className="mt-1.5 text-xs font-mono text-[var(--text-muted)]">
-            {res3.formulaDescription}
-          </p>
+          {!res3.isValid ? (
+            <p
+              role="alert"
+              className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[var(--status-danger-text)]"
+            >
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+              <span>{res3.formulaDescription}</span>
+            </p>
+          ) : (
+            <p className="mt-1.5 text-xs font-mono text-[var(--text-muted)]">
+              {res3.formulaDescription}
+            </p>
+          )}
         </div>
       </section>
     </div>
